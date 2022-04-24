@@ -22,14 +22,18 @@ y_dev = train_df['income']
 X_test = test_df.drop('income', axis=1)
 y_test = test_df['income']
 
-scaler = MinMaxScaler()
-X_dev = scaler.fit_transform(X_dev)
-X_test = scaler.transform(X_test)
+def min_max_scale(X_dev, X_test):
+    scaler = MinMaxScaler()
+    X_dev = scaler.fit_transform(X_dev)
+    X_test = scaler.transform(X_test)
 
 def run_GNB():
     print("====================================")
     print("Naive Bayes")
     print("---------")
+    
+    min_max_scale(X_dev, X_test)
+    
     gnb = GaussianNB()
     print(f"Training on X_dev with {X_dev.shape[0]} samples")
     t_start = time.time()
@@ -57,6 +61,9 @@ def run_GNB_SMOTE():
     print("====================================")
     print("Naive Bayes with SMOTE")
     print("---------")
+    
+    min_max_scale(X_dev, X_test)
+    
     gnb = GaussianNB()
     smote = SMOTE(random_state=42)
     X_dev_smote, y_dev_smote = smote.fit_resample(X_dev, y_dev)
@@ -86,6 +93,9 @@ def run_GNB_ros():
     print("====================================")
     print("Naive Bayes with Random Oversampling")
     print("---------")
+    
+    min_max_scale(X_dev, X_test)
+    
     gnb = GaussianNB()
     ros = RandomOverSampler(random_state=42)
     X_dev_ros, y_dev_ros = ros.fit_resample(X_dev, y_dev)
