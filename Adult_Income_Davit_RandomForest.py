@@ -24,14 +24,16 @@ def min_max_scale(X_dev, X_test):
     X_dev = scaler.fit_transform(X_dev)
     X_test = scaler.transform(X_test)
 
+    return X_dev, X_test
+
 
 def run_random_forest_ros():
-    min_max_scale(X_dev, X_test)
+    X_dev_scaled, X_test_scaled = min_max_scale(X_dev, X_test)
 
     ros = RandomOverSampler(random_state=42)
-    ros.fit(X_dev, y_dev)
+    ros.fit(X_dev_scaled, y_dev)
 
-    X_resampled, Y_resampled = ros.fit_resample(X_dev, y_dev)
+    X_resampled, Y_resampled = ros.fit_resample(X_dev_scaled, y_dev)
     round(Y_resampled.value_counts(normalize=True)
           * 100, 2).astype('str') + ' %'
     ran_for = RandomForestClassifier(random_state=42)
@@ -57,7 +59,7 @@ def run_random_forest_ros():
     t_end = time.time()
 
     p_start = time.time()
-    Y_pred_rf_best = rf_best.predict(X_test)
+    Y_pred_rf_best = rf_best.predict(X_test_scaled)
     p_end = time.time()
 
     accuracy_score_ = round(accuracy_score(y_test, Y_pred_rf_best) * 100, 2)
@@ -70,12 +72,12 @@ def run_random_forest_ros():
 
 
 def run_random_forest_smote():
-    min_max_scale(X_dev, X_test)
+    X_dev_scaled, X_test_scaled = min_max_scale(X_dev, X_test)
 
     smote = SMOTE(random_state=42)
-    smote.fit(X_dev, y_dev)
+    smote.fit(X_dev_scaled, y_dev)
 
-    X_resampled, Y_resampled = smote.fit_resample(X_dev, y_dev)
+    X_resampled, Y_resampled = smote.fit_resample(X_dev_scaled, y_dev)
     round(Y_resampled.value_counts(normalize=True)
           * 100, 2).astype('str') + ' %'
     ran_for = RandomForestClassifier(random_state=42)
@@ -101,7 +103,7 @@ def run_random_forest_smote():
     t_end = time.time()
 
     p_start = time.time()
-    Y_pred_rf_best = rf_best.predict(X_test)
+    Y_pred_rf_best = rf_best.predict(X_test_scaled)
     p_end = time.time()
 
     accuracy_score_ = round(accuracy_score(y_test, Y_pred_rf_best) * 100, 2)
