@@ -15,11 +15,18 @@ from sklearn import metrics
 
 train_df = pd.read_csv("train.csv")
 test_df = pd.read_csv("test.csv")
-main_df = pd.concat([train_df, test_df])
-X_dev = main_df.drop('income', axis=1)
-y_dev = main_df['income']
-scaler = MinMaxScaler()
-X_dev = scaler.fit_transform(X_dev)
+
+X_dev = train_df.drop('income', axis=1)
+y_dev = train_df['income']
+
+X_test = test_df.drop('income', axis=1)
+y_test = test_df['income']
+
+
+def min_max_scale(X_dev, X_test):
+    scaler = MinMaxScaler()
+    X_dev = scaler.fit_transform(X_dev)
+    X_test = scaler.transform(X_test)
 
 
 class RFIFeatureSelector(BaseEstimator, TransformerMixin):
@@ -73,25 +80,14 @@ def get_search_results(gs):
 
 
 def run_knn():
+    min_max_scale(X_dev, X_test)
 
-    n_samples = 20000
-
-    Data_sample = pd.DataFrame(X_dev).sample(
-        n=n_samples, random_state=8).values
-    target_sample = pd.DataFrame(y_dev).sample(
-        n=n_samples, random_state=8).values
-    Data_sample_train, Data_sample_test, target_sample_train, target_sample_test = train_test_split(Data_sample, target_sample,
-                                                                                                    test_size=0.3, random_state=999,
-                                                                                                    stratify=target_sample)
     cv_method = StratifiedKFold(n_splits=5, shuffle=True, random_state=999)
-
     pipe_KNN = Pipeline(steps=[('rfi_fs', RFIFeatureSelector()),
                                ('knn', KNeighborsClassifier())])
-
     params_pipe_KNN = {'rfi_fs__n_features_': [10, 20, X_dev.shape[1]],
                        'knn__n_neighbors': [1, 5, 10, 15, 20],
                        'knn__p': [1, 2]}
-
     gs_pipe_KNN = GridSearchCV(estimator=pipe_KNN,
                                param_grid=params_pipe_KNN,
                                cv=cv_method,
@@ -101,7 +97,7 @@ def run_knn():
                                verbose=1)
 
     t_start = time.time()
-    gs_pipe_KNN.fit(Data_sample_train, target_sample_train.ravel())
+    gs_pipe_KNN.fit(X_dev, y_dev)
     t_end = time.time()
 
     results_KNN = get_search_results(gs_pipe_KNN)
@@ -110,17 +106,17 @@ def run_knn():
     cv_method_ttest = StratifiedKFold(
         n_splits=10, shuffle=True, random_state=111)
     cv_results_KNN = cross_val_score(estimator=gs_pipe_KNN.best_estimator_,
-                                     X=Data_sample_test,
-                                     y=target_sample_test.ravel(),
+                                     X=X_test,
+                                     y=y_test,
                                      cv=cv_method_ttest,
                                      n_jobs=-2,
                                      scoring='roc_auc')
 
     p_start = time.time()
-    pred_KNN = gs_pipe_KNN.predict(Data_sample_test)
+    pred_KNN = gs_pipe_KNN.predict(y_test)
     p_end = time.time()
     report = metrics.classification_report(
-        target_sample_test, pred_KNN,  output_dict=True)
+        y_test, pred_KNN,  output_dict=True)
     f1_score = report['macro avg']['f1-score']
 
     print(f"KNN train time = {t_end - t_start}")
