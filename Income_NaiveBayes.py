@@ -17,22 +17,35 @@ from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, classifi
 train_df = pd.read_csv("train.csv")
 test_df = pd.read_csv("test.csv")
 
-X_dev = train_df.drop('income', axis=1)
+X_dev_g = train_df.drop('income', axis=1)
 y_dev = train_df['income']
-X_test = test_df.drop('income', axis=1)
+X_test_g = test_df.drop('income', axis=1)
 y_test = test_df['income']
+
+def get_top_20():
+    global train_df, test_df, X_dev_g, y_dev, X_test_g, y_test
+    train_df = pd.read_csv("train_20.csv")
+    test_df = pd.read_csv("test_20.csv")
+    
+    X_dev_g = train_df.drop('income', axis=1)
+    y_dev = train_df['income']
+    X_test_g = test_df.drop('income', axis=1)
+    y_test = test_df['income']
 
 def min_max_scale(X_dev, X_test):
     scaler = MinMaxScaler()
     X_dev = scaler.fit_transform(X_dev)
     X_test = scaler.transform(X_test)
+    return X_dev, X_test
 
 def run_GNB():
     print("====================================")
     print("Naive Bayes")
     print("---------")
     
-    min_max_scale(X_dev, X_test)
+    X_dev = X_dev_g
+    X_test = X_test_g
+    # X_dev, X_test = min_max_scale(X_dev_g, X_test_g)
     
     gnb = GaussianNB()
     print(f"Training on X_dev with {X_dev.shape[0]} samples")
@@ -62,7 +75,9 @@ def run_GNB_SMOTE():
     print("Naive Bayes with SMOTE")
     print("---------")
     
-    min_max_scale(X_dev, X_test)
+    X_dev = X_dev_g
+    X_test = X_test_g
+    # X_dev, X_test = min_max_scale(X_dev_g, X_test_g)
     
     gnb = GaussianNB()
     smote = SMOTE(random_state=42)
@@ -94,7 +109,9 @@ def run_GNB_ros():
     print("Naive Bayes with Random Oversampling")
     print("---------")
     
-    min_max_scale(X_dev, X_test)
+    X_dev = X_dev_g
+    X_test = X_test_g
+    # X_dev, X_test = min_max_scale(X_dev_g, X_test_g)
     
     gnb = GaussianNB()
     ros = RandomOverSampler(random_state=42)
@@ -124,4 +141,10 @@ def run_GNB_ros():
 run_GNB()
 run_GNB_SMOTE()
 run_GNB_ros()
+
+# print("running with top 20 features")
+# get_top_20()
+# run_GNB()
+# run_GNB_SMOTE()
+# run_GNB_ros()
     
