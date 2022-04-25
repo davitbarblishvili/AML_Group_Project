@@ -69,8 +69,8 @@ def run_random_forest_smote(X_dev, y_dev, X_test, y_test):
     p_end = timer.default_timer()
 
     # calculating accuracy and f1_score
-    accuracy_score_ = round(accuracy_score(y_test, Y_pred_rf_best) * 100, 2)
-    f1_score_ = round(f1_score(y_test, Y_pred_rf_best) * 100, 2)
+    accuracy_score_ = accuracy_score(y_test, Y_pred_rf_best)
+    f1_score_ = f1_score(y_test, Y_pred_rf_best)
 
     results = {
         'Model': "Random Forest",
@@ -141,8 +141,8 @@ def run_GNB(X_dev, y_dev, X_test, y_test):
     # 'Model', 'Accuracy', 'F1-Score', 'Fit-Time', 'Predict-Time'
     results = {
         'Model': "Naive Bayes",
-        "Accuracy": round(accuracy_score(y_test, ypred_gnb) * 100, 2),
-        'F1-Score': round(f1_score(y_test, ypred_gnb) * 100, 2),
+        "Accuracy": accuracy_score(y_test, ypred_gnb),
+        'F1-Score': f1_score(y_test, ypred_gnb),
         "Fit-Time": t_end - t_start,
         "Predict-Time": p_end - p_start
     }
@@ -165,8 +165,8 @@ def run_SVM(X_dev_, y_dev, X_test_, y_test):
 
     results = {
         'Model': "SVM",
-        "Accuracy": round(accuracy_score(y_test, pred_test4) * 100, 2),
-        'F1-Score': round(f1_score(y_test, pred_test4) * 100, 2),
+        "Accuracy": accuracy_score(y_test, pred_test4),
+        'F1-Score': f1_score(y_test, pred_test4),
         "Fit-Time": t_end_poly - t_start_poly,
         "Predict-Time": p_end_poly - p_start_poly
     }
