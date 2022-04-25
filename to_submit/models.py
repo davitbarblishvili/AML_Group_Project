@@ -36,9 +36,9 @@ warnings.filterwarnings("ignore")
 
 def min_max_scale(X_dev, X_test):
     scaler = MinMaxScaler()
-    X_dev = scaler.fit_transform(X_dev)
-    X_test = scaler.transform(X_test)
-    return X_dev, X_test
+    X_dev_s = scaler.fit_transform(X_dev)
+    X_test_s = scaler.transform(X_test)
+    return X_dev_s, X_test_s
 
 def run_random_forest_smote(X_dev, y_dev, X_test, y_test):
     X_dev_scaled, X_test_scaled = min_max_scale(X_dev, X_test)
@@ -55,13 +55,13 @@ def run_random_forest_smote(X_dev, y_dev, X_test, y_test):
     rf_best = RandomForestClassifier(
         max_depth=102, n_estimators=40, random_state=42)
 
-    t_start = time.time()
+    t_start = timer.default_timer()
     rf_best.fit(X_resampled, Y_resampled)
-    t_end = time.time()
+    t_end = timer.default_timer()
 
-    p_start = time.time()
+    p_start = timer.default_timer()
     Y_pred_rf_best = rf_best.predict(X_test_scaled)
-    p_end = time.time()
+    p_end = timer.default_timer()
 
     accuracy_score_ = round(accuracy_score(y_test, Y_pred_rf_best) * 100, 2)
     f1_score_ = round(f1_score(y_test, Y_pred_rf_best) * 100, 2)
@@ -80,13 +80,13 @@ def run_knn(neighbors, distance, X_dev, y_dev, X_test, y_test):
     X_dev_scaled, X_test_scaled = min_max_scale(X_dev, X_test)
     model = KNeighborsClassifier(n_neighbors=neighbors, p=distance)
 
-    t_start = time.time()
+    t_start = timer.default_timer()
     model.fit(X_dev_scaled, y_dev)
-    t_end = time.time()
+    t_end = timer.default_timer()
 
-    p_start = time.time()
+    p_start = timer.default_timer()
     pred_KNN = model.predict(X_test_scaled)
-    p_end = time.time()
+    p_end = timer.default_timer()
     report = metrics.classification_report(
         y_test, pred_KNN,  output_dict=True)
 
@@ -103,21 +103,21 @@ def run_knn(neighbors, distance, X_dev, y_dev, X_test, y_test):
     }
     return results
 
-def run_GNB(X_dev_g,y_dev,X_test_g, y_test):
+def run_GNB(X_dev,y_dev,X_test, y_test):
 
-    X_dev = X_dev_g
-    X_test = X_test_g
+    # X_dev = X_dev_g
+    # X_test = X_test_g
     # X_dev, X_test = min_max_scale(X_dev_g, X_test_g)
     
     gnb = GaussianNB()
-
-    t_start = time.time()
+    
+    t_start = timer.default_timer()
     gnb.fit(X_dev, y_dev)
-    t_end = time.time()
-
-    p_start = time.time()
+    t_end = timer.default_timer()
+    
+    p_start = timer.default_timer()
     ypred_gnb = gnb.predict(X_test)
-    p_end = time.time()
+    p_end = timer.default_timer()
 
     #'Model', 'Accuracy', 'F1-Score', 'Fit-Time', 'Predict-Time'
     results = {
@@ -132,17 +132,17 @@ def run_GNB(X_dev_g,y_dev,X_test_g, y_test):
 
 def run_SVM(X_dev, y_dev, X_test, y_test):
 
-    min_max_scale(X_dev, X_test)
+    X_dev, X_test = min_max_scale(X_dev, X_test)
     
     
     svm_poly = SVC(kernel="poly")
-    t_start_poly = time.time()
+    t_start_poly = timer.default_timer()
     svm_poly.fit(X_dev, y_dev.ravel(order='C'))
-    t_end_poly = time.time()
+    t_end_poly = timer.default_timer()
     pred_train4 = svm_poly.predict(X_dev)
-    p_start_poly = time.time()
+    p_start_poly = timer.default_timer()
     pred_test4 = svm_poly.predict(X_test)
-    p_end_poly = time.time()
+    p_end_poly = timer.default_timer()
 
 
     results = {
