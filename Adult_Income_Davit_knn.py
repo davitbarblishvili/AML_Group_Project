@@ -3,6 +3,7 @@ import pandas as pd
 from sklearn import metrics
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.neighbors import KNeighborsClassifier
+import timeit as timer
 
 
 train_df = pd.read_csv("train.csv")
@@ -28,13 +29,13 @@ def run_knn(neighbors, distance):
     X_dev_scaled, X_test_scaled = min_max_scale(X_dev, X_test)
     model = KNeighborsClassifier(n_neighbors=neighbors, p=distance)
 
-    t_start = time.time()
+    t_start = timer.default_timer()
     model.fit(X_dev_scaled, y_dev)
-    t_end = time.time()
+    t_end = timer.default_timer()
 
-    p_start = time.time()
+    p_start = timer.default_timer()
     pred_KNN = model.predict(X_test_scaled)
-    p_end = time.time()
+    p_end = timer.default_timer()
     report = metrics.classification_report(
         y_test, pred_KNN,  output_dict=True)
 

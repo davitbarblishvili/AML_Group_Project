@@ -54,3 +54,5 @@ def lr():
     print("Predict time: ", time_predict)
     print("Accuracy: ", accuracy_score(ytest,predictions) )
     print("F1 score: ", f1_score(ytest,predictions) )
+
+lr()

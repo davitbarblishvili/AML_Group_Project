@@ -6,6 +6,7 @@ from imblearn.under_sampling import RandomUnderSampler
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import RandomizedSearchCV
+import timeit as timer
 
 
 train_df = pd.read_csv("train.csv")
@@ -54,13 +55,13 @@ def run_random_forest_ros():
     rf_best = RandomForestClassifier(
         max_depth=102, n_estimators=40, random_state=42)
 
-    t_start = time.time()
+    t_start = timer.default_timer()
     rf_best.fit(X_resampled, Y_resampled)
-    t_end = time.time()
+    t_end = timer.default_timer()
 
-    p_start = time.time()
+    p_start = timer.default_timer()
     Y_pred_rf_best = rf_best.predict(X_test_scaled)
-    p_end = time.time()
+    p_end = timer.default_timer()
 
     accuracy_score_ = round(accuracy_score(y_test, Y_pred_rf_best) * 100, 2)
     f1_score_ = round(f1_score(y_test, Y_pred_rf_best) * 100, 2)
@@ -100,13 +101,13 @@ def run_random_forest_smote():
     rf_best = RandomForestClassifier(
         max_depth=102, n_estimators=40, random_state=42)
 
-    t_start = time.time()
+    t_start = timer.default_timer()
     rf_best.fit(X_resampled, Y_resampled)
-    t_end = time.time()
+    t_end = timer.default_timer()
 
-    p_start = time.time()
+    p_start = timer.default_timer()
     Y_pred_rf_best = rf_best.predict(X_test_scaled)
-    p_end = time.time()
+    p_end = timer.default_timer()
 
     accuracy_score_ = round(accuracy_score(y_test, Y_pred_rf_best) * 100, 2)
     f1_score_ = round(f1_score(y_test, Y_pred_rf_best) * 100, 2)
@@ -146,13 +147,13 @@ def run_random_forest_rus():
     rf_best = RandomForestClassifier(
         max_depth=102, n_estimators=40, random_state=42)
 
-    t_start = time.time()
+    t_start = timer.default_timer()
     rf_best.fit(X_resampled, Y_resampled)
-    t_end = time.time()
+    t_end = timer.default_timer()
 
-    p_start = time.time()
+    p_start = timer.default_timer()
     Y_pred_rf_best = rf_best.predict(X_test_scaled)
-    p_end = time.time()
+    p_end = timer.default_timer()
 
     accuracy_score_ = round(accuracy_score(y_test, Y_pred_rf_best) * 100, 2)
     f1_score_ = round(f1_score(y_test, Y_pred_rf_best) * 100, 2)

@@ -6,6 +6,7 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, classification_report
 from sklearn.svm import LinearSVC, SVC
+import timeit as timer
 
 train = pd.read_csv("train.csv")
 test = pd.read_csv("test.csv")
@@ -29,13 +30,13 @@ def run_SVM():
     
     
     svm_poly = SVC(kernel="poly")
-    t_start_poly = time.time()
+    t_start_poly = timer.default_timer()
     svm_poly.fit(X_dev, y_dev.ravel(order='C'))
-    t_end_poly = time.time()
+    t_end_poly = timer.default_timer()
     pred_train4 = svm_poly.predict(X_dev)
-    p_start_poly = time.time()
+    p_start_poly = timer.default_timer()
     pred_test4 = svm_poly.predict(X_test)
-    p_end_poly = time.time()
+    p_end_poly = timer.default_timer()
 
     print(f"Rbf kernel SVM train time = {t_end_poly - t_start_poly}")
     print(f"Rbf kernel SVM prediction time = {p_end_poly - p_start_poly}")
