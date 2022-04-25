@@ -1,3 +1,4 @@
+from pickle import FALSE
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -50,9 +51,9 @@ df = df.drop(columns=categorical_columns)
 df = df.drop(columns=['relationship_Husband','relationship_Unmarried', 'relationship_Wife'])
 
 #statified split into test/train
-train1, test1 = train_test_split(df,stratify=df['income'],test_size=0.25,random_state=42)
-train2, test2 = train_test_split(df,stratify=df['income'],test_size=0.25,random_state=43)
-train3, test3 = train_test_split(df,stratify=df['income'],test_size=0.25,random_state=44)
+train1, test1 = train_test_split(df,stratify=df['income'],test_size=0.20,random_state=42)
+train2, test2 = train_test_split(df,stratify=df['income'],test_size=0.20,random_state=43)
+train3, test3 = train_test_split(df,stratify=df['income'],test_size=0.20,random_state=44)
 
 #write to file
 train1.to_csv('train1.csv', index=False)
