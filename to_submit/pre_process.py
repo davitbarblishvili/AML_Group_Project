@@ -50,8 +50,14 @@ df = df.drop(columns=categorical_columns)
 df = df.drop(columns=['relationship_Husband','relationship_Unmarried', 'relationship_Wife'])
 
 #statified split into test/train
-train, test = train_test_split(df,stratify=df['income'],test_size=0.25)
+train1, test1 = train_test_split(df,stratify=df['income'],test_size=0.25,random_state=42)
+train2, test2 = train_test_split(df,stratify=df['income'],test_size=0.25,random_state=43)
+train3, test3 = train_test_split(df,stratify=df['income'],test_size=0.25,random_state=44)
 
 #write to file
-train.to_csv('train.csv', index=False)
-test.to_csv('test.csv', index=False)
+train1.to_csv('train1.csv', index=False,random_state=42)
+test1.to_csv('test1.csv', index=False)
+train2.to_csv('train2.csv', index=False,random_state=42)
+test2.to_csv('test2.csv', index=False)
+train3.to_csv('train3.csv', index=False,random_state=42)
+test3.to_csv('test3.csv', index=False)
