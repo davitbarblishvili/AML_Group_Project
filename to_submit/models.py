@@ -46,7 +46,7 @@ def run_random_forest_smote(X_dev, y_dev, X_test, y_test):
     # scale data
     X_dev_scaled, X_test_scaled = min_max_scale(X_dev, X_test)
 
-    # using smote to fix class imaba,ance
+    # using smote to fix class imabalance
     smote = SMOTE(random_state=42)
     smote.fit(X_dev_scaled, y_dev)
 
