@@ -31,25 +31,6 @@ def min_max_scale(X_dev, X_test):
     return X_dev, X_test
 
 
-class RFIFeatureSelector(BaseEstimator, TransformerMixin):
-
-    def __init__(self, n_features_=10):
-        self.n_features_ = n_features_
-        self.fs_indices_ = None
-
-    def fit(self, X, y):
-        from sklearn.ensemble import RandomForestClassifier
-        from numpy import argsort
-        model_rfi = RandomForestClassifier(n_estimators=100)
-        model_rfi.fit(X, y)
-        self.fs_indices_ = argsort(model_rfi.feature_importances_)[
-            ::-1][0:self.n_features_]
-        return self
-
-    def transform(self, X, y=None):
-        return X[:, self.fs_indices_]
-
-
 def run_knn(neighbors, distance):
 
     X_dev_scaled, X_test_scaled = min_max_scale(X_dev, X_test)
