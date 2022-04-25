@@ -150,19 +150,26 @@ def run_GNB(X_dev, y_dev, X_test, y_test):
 
 
 def run_SVM(X_dev_, y_dev, X_test_, y_test):
-
+    
+    # scale the data
     X_dev, X_test = min_max_scale(X_dev_, X_test_)
     
-    
+    # define the model
     svm_poly = SVC(kernel="poly")
+    
     t_start_poly = timer.default_timer()
+    # fit the classifier
     svm_poly.fit(X_dev, y_dev.ravel(order='C'))
     t_end_poly = timer.default_timer()
+    
     pred_train4 = svm_poly.predict(X_dev)
     p_start_poly = timer.default_timer()
+    # predict on test set
     pred_test4 = svm_poly.predict(X_test)
     p_end_poly = timer.default_timer()
 
+    # calculate accuracy and F1 score on test set as well as training and prediction times
+    # 'Model', 'Accuracy', 'F1-Score', 'Fit-Time', 'Predict-Time'
     results = {
         'Model': "SVM",
         "Accuracy": accuracy_score(y_test, pred_test4),
