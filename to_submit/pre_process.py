@@ -55,9 +55,9 @@ train2, test2 = train_test_split(df,stratify=df['income'],test_size=0.25,random_
 train3, test3 = train_test_split(df,stratify=df['income'],test_size=0.25,random_state=44)
 
 #write to file
-train1.to_csv('train1.csv', index=False,random_state=42)
+train1.to_csv('train1.csv', index=False)
 test1.to_csv('test1.csv', index=False)
-train2.to_csv('train2.csv', index=False,random_state=42)
+train2.to_csv('train2.csv', index=False)
 test2.to_csv('test2.csv', index=False)
-train3.to_csv('train3.csv', index=False,random_state=42)
+train3.to_csv('train3.csv', index=False)
 test3.to_csv('test3.csv', index=False)
