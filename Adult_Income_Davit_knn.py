@@ -1,16 +1,8 @@
-#!/usr/bin/env python
-# coding: utf-8
-import pandas as pd
-import numpy as np
-from sklearn.preprocessing import MinMaxScaler
 import time
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import StratifiedKFold, GridSearchCV
-from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.pipeline import Pipeline
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.model_selection import cross_val_score
+import pandas as pd
 from sklearn import metrics
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.neighbors import KNeighborsClassifier
 
 
 train_df = pd.read_csv("train.csv")

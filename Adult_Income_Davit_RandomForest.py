@@ -1,11 +1,9 @@
-import pandas as pd
-import numpy as np
-from sklearn.preprocessing import MinMaxScaler
 import time
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 from imblearn.over_sampling import RandomOverSampler, SMOTE
 from imblearn.under_sampling import RandomUnderSampler
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import f1_score
+from sklearn.metrics import accuracy_score, f1_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import RandomizedSearchCV
 
@@ -165,6 +163,11 @@ def run_random_forest_rus():
     print(f"random forest (RUS) f1_score = {f1_score_}\n")
 
 
+# RandomForestClassifier with RandomOverSampler
 run_random_forest_ros()
+
+# RandomForestClassifier with RandomUnderSampler
 run_random_forest_rus()
+
+# RandomForestClassifier with SMOTE
 run_random_forest_smote()
