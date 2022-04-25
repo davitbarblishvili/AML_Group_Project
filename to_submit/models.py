@@ -130,9 +130,9 @@ def run_GNB(X_dev,y_dev,X_test, y_test):
     return results
 
 
-def run_SVM(X_dev, y_dev, X_test, y_test):
+def run_SVM(X_dev_, y_dev, X_test_, y_test):
 
-    X_dev, X_test = min_max_scale(X_dev, X_test)
+    X_dev, X_test = min_max_scale(X_dev_, X_test_)
     
     
     svm_poly = SVC(kernel="poly")
@@ -305,6 +305,10 @@ results = pd.DataFrame(columns = ['Model', 'Accuracy', 'F1-Score', 'Fit-Time', '
 
 
 #RUN ALL MODELS ON ALL DATA
+#Naive Bayes
+results = results.append( run_GNB(train_x1,train_y1,test_x1,test_y1) , ignore_index = True)
+results = results.append( run_GNB(train_x2,train_y2,test_x2,test_y2) , ignore_index = True)
+results = results.append( run_GNB(train_x3,train_y3,test_x3,test_y3) , ignore_index = True)
 #Logistic Regression
 results = results.append( lr(train_x1,train_y1,test_x1,test_y1) , ignore_index = True)
 results = results.append( lr(train_x2,train_y2,test_x2,test_y2) , ignore_index = True)
@@ -317,10 +321,6 @@ results = results.append( run_SVM(train_x3,train_y3,test_x3,test_y3) , ignore_in
 results = results.append( run_knn(20,2, train_x1,train_y1,test_x1,test_y1) , ignore_index = True)
 results = results.append( run_knn(20,2, train_x2,train_y2,test_x2,test_y2) , ignore_index = True)
 results = results.append( run_knn(20,2, train_x3,train_y3,test_x3,test_y3) , ignore_index = True)
-#Naive Bayes
-results = results.append( run_GNB(train_x1,train_y1,test_x1,test_y1) , ignore_index = True)
-results = results.append( run_GNB(train_x2,train_y2,test_x2,test_y2) , ignore_index = True)
-results = results.append( run_GNB(train_x3,train_y3,test_x3,test_y3) , ignore_index = True)
 #Random Forest (with best resampling)
 results = results.append( run_random_forest_smote(train_x1,train_y1,test_x1,test_y1) , ignore_index = True)
 results = results.append( run_random_forest_smote(train_x2,train_y2,test_x2,test_y2) , ignore_index = True)
