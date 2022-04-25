@@ -163,7 +163,7 @@ def run_random_forest_rus():
     print(f"random forest (RUS) f1_score = {f1_score_}\n")
 
 
-# RandomForestClassifier with RandomOverSampler
+# RandomForestClassifier with RandomOverSampler (best model out of 3)
 run_random_forest_ros()
 
 # RandomForestClassifier with RandomUnderSampler
