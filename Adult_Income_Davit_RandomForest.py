@@ -39,18 +39,19 @@ def run_random_forest_ros():
     ran_for = RandomForestClassifier(random_state=42)
     ran_for.fit(X_resampled, Y_resampled)
 
-    n_estimators = [int(x) for x in np.linspace(start=40, stop=150, num=15)]
-    max_depth = [int(x) for x in np.linspace(40, 150, num=15)]
-    param_dist = {
-        'n_estimators': n_estimators,
-        'max_depth': max_depth,
-    }
-    rf_tuned = RandomForestClassifier(random_state=42)
-    rf_cv = RandomizedSearchCV(
-        estimator=rf_tuned, param_distributions=param_dist, cv=5, random_state=42)
+    #n_estimators = [int(x) for x in np.linspace(start=40, stop=150, num=15)]
+    #max_depth = [int(x) for x in np.linspace(40, 150, num=15)]
+    # param_dist = {
+    #    'n_estimators': n_estimators,
+    #    'max_depth': max_depth,
+    # }
+    #rf_tuned = RandomForestClassifier(random_state=42)
+    # rf_cv = RandomizedSearchCV(
+    #    estimator=rf_tuned, param_distributions=param_dist, cv=5, random_state=42)
+    #rf_cv.fit(X_resampled, Y_resampled)
 
-    rf_cv.fit(X_resampled, Y_resampled)
-
+    # from RandomizedSearchCV I obtained the best parameters to be:
+    # max_depth = 102, n_estimators = 40
     rf_best = RandomForestClassifier(
         max_depth=102, n_estimators=40, random_state=42)
 
@@ -83,18 +84,20 @@ def run_random_forest_smote():
     ran_for = RandomForestClassifier(random_state=42)
     ran_for.fit(X_resampled, Y_resampled)
 
-    n_estimators = [int(x) for x in np.linspace(start=40, stop=150, num=15)]
-    max_depth = [int(x) for x in np.linspace(40, 150, num=15)]
-    param_dist = {
-        'n_estimators': n_estimators,
-        'max_depth': max_depth,
-    }
-    rf_tuned = RandomForestClassifier(random_state=42)
-    rf_cv = RandomizedSearchCV(
-        estimator=rf_tuned, param_distributions=param_dist, cv=5, random_state=42)
+    #n_estimators = [int(x) for x in np.linspace(start=40, stop=150, num=15)]
+    #max_depth = [int(x) for x in np.linspace(40, 150, num=15)]
+    # param_dist = {
+    #    'n_estimators': n_estimators,
+    #    'max_depth': max_depth,
+    # }
+    #rf_tuned = RandomForestClassifier(random_state=42)
+    # rf_cv = RandomizedSearchCV(
+    # estimator=rf_tuned, param_distributions=param_dist, cv=5, random_state=42)
 
-    rf_cv.fit(X_resampled, Y_resampled)
+    #rf_cv.fit(X_resampled, Y_resampled)
 
+    # from RandomizedSearchCV I obtained the best parameters to be:
+    # max_depth = 102, n_estimators = 40
     rf_best = RandomForestClassifier(
         max_depth=102, n_estimators=40, random_state=42)
 
