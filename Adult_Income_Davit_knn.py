@@ -49,26 +49,26 @@ def run_knn(neighbors, distance):
         f"KNN[k = {neighbors}, distance = {'Manhattan' if distance == 1 else 'Euclidean'}] f1_score = {f1_score}\n")
 
 
-# # k = 1, distance = Manhattan (1)
-# run_knn(neighbors=1, distance=1)
+# k = 1, distance = Manhattan (1)
+run_knn(neighbors=1, distance=1)
 
-# # k = 5, distance = Manhattan (1)
-# run_knn(neighbors=5, distance=1)
+# k = 5, distance = Manhattan (1)
+run_knn(neighbors=5, distance=1)
 
-# # k = 10, distance = Manhattan (1)
-# run_knn(neighbors=10, distance=1)
+# k = 10, distance = Manhattan (1)
+run_knn(neighbors=10, distance=1)
 
 # k = 20, distance = Manhattan (1)
 run_knn(neighbors=20, distance=1)
 
-# # k = 1, distance = Euclidean (2)
-# run_knn(neighbors=1, distance=2)
+# k = 1, distance = Euclidean (2)
+run_knn(neighbors=1, distance=2)
 
-# # k = 5, distance = Euclidean (2)
-# run_knn(neighbors=5, distance=2)
+# k = 5, distance = Euclidean (2)
+run_knn(neighbors=5, distance=2)
 
-# # k = 10, distance = Euclidean (2)
-# run_knn(neighbors=10, distance=2)
+# k = 10, distance = Euclidean (2)
+run_knn(neighbors=10, distance=2)
 
 # k = 20, distance = Euclidean (2) (best model out of all of them)
 run_knn(neighbors=20, distance=2)
