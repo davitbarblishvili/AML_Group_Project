@@ -50,86 +50,52 @@ class RFIFeatureSelector(BaseEstimator, TransformerMixin):
         return X[:, self.fs_indices_]
 
 
-def get_search_results(gs):
-
-    def model_result(scores, params):
-        scores = {'mean_score': np.mean(scores),
-                  'std_score': np.std(scores),
-                  'min_score': np.min(scores),
-                  'max_score': np.max(scores)}
-        return pd.Series({**params, **scores})
-
-    models = []
-    scores = []
-
-    for i in range(gs.n_splits_):
-        key = f"split{i}_test_score"
-        r = gs.cv_results_[key]
-        scores.append(r.reshape(-1, 1))
-
-    all_scores = np.hstack(scores)
-    for p, s in zip(gs.cv_results_['params'], all_scores):
-        models.append((model_result(s, p)))
-
-    pipe_results = pd.concat(models, axis=1).T.sort_values(
-        ['mean_score'], ascending=False)
-
-    columns_first = ['mean_score', 'std_score', 'max_score', 'min_score']
-    columns = columns_first + \
-        [c for c in pipe_results.columns if c not in columns_first]
-
-    return pipe_results[columns]
-
-
-def run_knn():
+def run_knn(neighbors, distance):
 
     X_dev_scaled, X_test_scaled = min_max_scale(X_dev, X_test)
-    cv_method = StratifiedKFold(n_splits=5, shuffle=True, random_state=999)
-
-    pipe_KNN = Pipeline(steps=[('rfi_fs', RFIFeatureSelector()),
-                               ('knn', KNeighborsClassifier())])
-
-    params_pipe_KNN = {'rfi_fs__n_features_': [10, 20, X_dev.shape[1]],
-                       'knn__n_neighbors': [1, 5, 10, 15, 20],
-                       'knn__p': [1, 2]}
-
-    gs_pipe_KNN = GridSearchCV(estimator=pipe_KNN,
-                               param_grid=params_pipe_KNN,
-                               cv=cv_method,
-                               refit=True,
-                               n_jobs=-2,
-                               scoring='roc_auc',
-                               verbose=1)
+    model = KNeighborsClassifier(n_neighbors=neighbors, p=distance)
 
     t_start = time.time()
-    gs_pipe_KNN.fit(X_dev_scaled, y_dev)
+    model.fit(X_dev_scaled, y_dev)
     t_end = time.time()
 
-    results_KNN = get_search_results(gs_pipe_KNN)
-    results_KNN.head()
-
-    cv_method_ttest = StratifiedKFold(
-        n_splits=10, shuffle=True, random_state=111)
-
-    cv_results_KNN = cross_val_score(estimator=gs_pipe_KNN.best_estimator_,
-                                     X=X_test_scaled,
-                                     y=y_test,
-                                     cv=cv_method_ttest,
-                                     n_jobs=-2,
-                                     scoring='roc_auc')
-
     p_start = time.time()
-    pred_KNN = gs_pipe_KNN.predict(X_test_scaled)
+    pred_KNN = model.predict(X_test_scaled)
     p_end = time.time()
     report = metrics.classification_report(
         y_test, pred_KNN,  output_dict=True)
+
     f1_score = report['macro avg']['f1-score']
     accuracy_ = report['accuracy']
 
-    print(f"KNN train time = {t_end - t_start}")
-    print(f"KNN prediction time = {p_end - p_start}")
-    print(f"accuracy for knn = {accuracy_}")
-    print(f"f1-score for knn = {f1_score}")
+    print(f"KNN[k = {neighbors}, distance = {'Manhattan' if distance == 1 else 'Euclidean'}] train time = {t_end - t_start}")
+    print(f"KNN[k = {neighbors}, distance = {'Manhattan' if distance == 1 else 'Euclidean'}] prediction time = {p_end - p_start}")
+    print(
+        f"KNN[k = {neighbors}, distance = {'Manhattan' if distance == 1 else 'Euclidean'}] accuracy = {accuracy_}")
+    print(
+        f"KNN[k = {neighbors}, distance = {'Manhattan' if distance == 1 else 'Euclidean'}] f1_score = {f1_score}\n")
 
 
-run_knn()
+# k = 1, distance = Manhattan (1)
+run_knn(neighbors=1, distance=1)
+
+# k = 5, distance = Manhattan (1)
+run_knn(neighbors=5, distance=1)
+
+# k = 10, distance = Manhattan (1)
+run_knn(neighbors=10, distance=1)
+
+# k = 20, distance = Manhattan (1)
+run_knn(neighbors=20, distance=1)
+
+# k = 1, distance = Euclidean (2)
+run_knn(neighbors=1, distance=2)
+
+# k = 5, distance = Euclidean (2)
+run_knn(neighbors=5, distance=2)
+
+# k = 10, distance = Euclidean (2)
+run_knn(neighbors=10, distance=2)
+
+# k = 20, distance = Euclidean (2)
+run_knn(neighbors=20, distance=2)
