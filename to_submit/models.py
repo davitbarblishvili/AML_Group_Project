@@ -34,24 +34,28 @@ from sklearn.svm import LinearSVC, SVC
 import warnings
 warnings.filterwarnings("ignore")
 
+
 def min_max_scale(X_dev, X_test):
     scaler = MinMaxScaler()
     X_dev_s = scaler.fit_transform(X_dev)
     X_test_s = scaler.transform(X_test)
     return X_dev_s, X_test_s
 
+
 def run_random_forest_smote(X_dev, y_dev, X_test, y_test):
+    # scale data
     X_dev_scaled, X_test_scaled = min_max_scale(X_dev, X_test)
 
+    # using smote to fix class imaba,ance
     smote = SMOTE(random_state=42)
     smote.fit(X_dev_scaled, y_dev)
 
+    # resample the data using smote
     X_resampled, Y_resampled = smote.fit_resample(X_dev_scaled, y_dev)
     round(Y_resampled.value_counts(normalize=True)
           * 100, 2).astype('str') + ' %'
-    ran_for = RandomForestClassifier(random_state=42)
-    ran_for.fit(X_resampled, Y_resampled)
 
+    # define randomforestclassifier and fit it to train data
     rf_best = RandomForestClassifier(
         max_depth=102, n_estimators=40, random_state=42)
 
@@ -59,10 +63,12 @@ def run_random_forest_smote(X_dev, y_dev, X_test, y_test):
     rf_best.fit(X_resampled, Y_resampled)
     t_end = timer.default_timer()
 
+    # make predictions on test data
     p_start = timer.default_timer()
     Y_pred_rf_best = rf_best.predict(X_test_scaled)
     p_end = timer.default_timer()
 
+    # calculating accuracy and f1_score
     accuracy_score_ = round(accuracy_score(y_test, Y_pred_rf_best) * 100, 2)
     f1_score_ = round(f1_score(y_test, Y_pred_rf_best) * 100, 2)
 
@@ -75,56 +81,69 @@ def run_random_forest_smote(X_dev, y_dev, X_test, y_test):
     }
     return results
 
+
 def run_knn(neighbors, distance, X_dev, y_dev, X_test, y_test):
 
+    # scale the data
     X_dev_scaled, X_test_scaled = min_max_scale(X_dev, X_test)
+    # define the model
     model = KNeighborsClassifier(n_neighbors=neighbors, p=distance)
 
+    # fit the model to train data
     t_start = timer.default_timer()
     model.fit(X_dev_scaled, y_dev)
     t_end = timer.default_timer()
 
+    # test the model on test data
     p_start = timer.default_timer()
     pred_KNN = model.predict(X_test_scaled)
     p_end = timer.default_timer()
+
+    # getting classification report
     report = metrics.classification_report(
         y_test, pred_KNN,  output_dict=True)
 
+    # obtaining f1_score and accuracy for the model
     f1_score = report['macro avg']['f1-score']
     accuracy_ = report['accuracy']
 
-    
     results = {
         'Model': "KNN",
-        "Accuracy":accuracy_,
-        'F1-Score': f1_score, 
-        "Fit-Time":t_end - t_start, 
+        "Accuracy": accuracy_,
+        'F1-Score': f1_score,
+        "Fit-Time": t_end - t_start,
         "Predict-Time": p_end - p_start
     }
     return results
 
-def run_GNB(X_dev,y_dev,X_test, y_test):
 
-    # X_dev = X_dev_g
-    # X_test = X_test_g
-    # X_dev, X_test = min_max_scale(X_dev_g, X_test_g)
-    
+def run_GNB(X_dev, y_dev, X_test, y_test):
+
+    # We do not apply scaling because it changes the probability distribution of the features.
+
+    # initialize Gaussian Naive Bayes classifier
     gnb = GaussianNB()
-    
+
     t_start = timer.default_timer()
+    # fit the classifier
     gnb.fit(X_dev, y_dev)
+
     t_end = timer.default_timer()
-    
+
     p_start = timer.default_timer()
+
+    # predict on test set
     ypred_gnb = gnb.predict(X_test)
+
     p_end = timer.default_timer()
 
-    #'Model', 'Accuracy', 'F1-Score', 'Fit-Time', 'Predict-Time'
+    # calculate accuracy and F1 score on test set as well as training and prediction times
+    # 'Model', 'Accuracy', 'F1-Score', 'Fit-Time', 'Predict-Time'
     results = {
         'Model': "Naive Bayes",
-        "Accuracy":round(accuracy_score(y_test, ypred_gnb) * 100, 2),
-        'F1-Score': round(f1_score(y_test, ypred_gnb) * 100, 2), 
-        "Fit-Time":t_end - t_start, 
+        "Accuracy": round(accuracy_score(y_test, ypred_gnb) * 100, 2),
+        'F1-Score': round(f1_score(y_test, ypred_gnb) * 100, 2),
+        "Fit-Time": t_end - t_start,
         "Predict-Time": p_end - p_start
     }
     return results
@@ -144,44 +163,45 @@ def run_SVM(X_dev_, y_dev, X_test_, y_test):
     pred_test4 = svm_poly.predict(X_test)
     p_end_poly = timer.default_timer()
 
-
     results = {
         'Model': "SVM",
         "Accuracy": round(accuracy_score(y_test, pred_test4) * 100, 2),
-        'F1-Score': round(f1_score(y_test, pred_test4) * 100, 2), 
-        "Fit-Time":t_end_poly - t_start_poly, 
-        "Predict-Time":p_end_poly - p_start_poly
+        'F1-Score': round(f1_score(y_test, pred_test4) * 100, 2),
+        "Fit-Time": t_end_poly - t_start_poly,
+        "Predict-Time": p_end_poly - p_start_poly
     }
     return results
 
-def cnn(xtrain,ytrain, xtest,  ytest):
-    #turn all data into binary
-    xtrain['education.num']=np.where(xtrain['education.num'] >= 13, 1, 0) #turned to check if higher than college degree
-    xtrain['capital.gain']=np.where(xtrain['capital.gain'] > 0, 1, 0)
-    xtrain['capital.loss']=np.where(xtrain['capital.loss'] > 0, 1, 0)
-    xtrain['hours.per.week']=np.where(xtrain['hours.per.week'] >= 40, 1, 0) #turned to check if full time
+
+def cnn(xtrain, ytrain, xtest,  ytest):
+    # turn all data into binary
+    # turned to check if higher than college degree
+    xtrain['education.num'] = np.where(xtrain['education.num'] >= 13, 1, 0)
+    xtrain['capital.gain'] = np.where(xtrain['capital.gain'] > 0, 1, 0)
+    xtrain['capital.loss'] = np.where(xtrain['capital.loss'] > 0, 1, 0)
+    xtrain['hours.per.week'] = np.where(
+        xtrain['hours.per.week'] >= 40, 1, 0)  # turned to check if full time
     xtrain = xtrain.drop(columns='age')
-    #repeat for test
-    xtest['education.num']=np.where(xtest['education.num'] >= 13, 1, 0) #turned to check if higher than college degree
-    xtest['capital.gain']=np.where(xtest['capital.gain'] > 0, 1, 0)
-    xtest['capital.loss']=np.where(xtest['capital.loss'] > 0, 1, 0)
-    xtest['hours.per.week']=np.where(xtest['hours.per.week'] >= 40, 1, 0) #turned to check if full time
+    # repeat for test
+    # turned to check if higher than college degree
+    xtest['education.num'] = np.where(xtest['education.num'] >= 13, 1, 0)
+    xtest['capital.gain'] = np.where(xtest['capital.gain'] > 0, 1, 0)
+    xtest['capital.loss'] = np.where(xtest['capital.loss'] > 0, 1, 0)
+    xtest['hours.per.week'] = np.where(
+        xtest['hours.per.week'] >= 40, 1, 0)  # turned to check if full time
     xtest = xtest.drop(columns='age')
-    
 
-
-    #reshape for cnn (as tf tensor)
-    xtrain = xtrain.values.reshape(xtrain.shape[0],xtrain.shape[1],1)
+    # reshape for cnn (as tf tensor)
+    xtrain = xtrain.values.reshape(xtrain.shape[0], xtrain.shape[1], 1)
     xtrain = tf.cast(xtrain, tf.float32)
-    xtest = xtest.values.reshape(xtest.shape[0],xtest.shape[1],1)
+    xtest = xtest.values.reshape(xtest.shape[0], xtest.shape[1], 1)
     xtest = tf.cast(xtest, tf.float32)
 
-    #one hot encode for cnn's softmax
+    # one hot encode for cnn's softmax
     ytrain = tf.keras.utils.to_categorical(ytrain, 2)
     ytest = tf.keras.utils.to_categorical(ytest, 2)
-    
-    
-    #create model
+
+    # create model
     model = tf.keras.Sequential()
 
     # two convoluted layers with dropout/pooling
@@ -192,84 +212,79 @@ def cnn(xtrain,ytrain, xtest,  ytest):
     model.add(Dropout(0.5))
     model.add(MaxPooling1D())
 
-    #flatten back to 1d and turn to softmax
+    # flatten back to 1d and turn to softmax
     model.add(Flatten())
     model.add(Dense(64, activation='relu'))
 
-    #softmax layer for output
-    model.add(Dense(2, activation='softmax'))#equivalent to 1d sigmoid
-    model.compile('adam','categorical_crossentropy', metrics=['accuracy'])
-    model.build(input_shape= xtrain.shape )
-    
-    
-    
-    
-    #fit and get predict times
+    # softmax layer for output
+    model.add(Dense(2, activation='softmax'))  # equivalent to 1d sigmoid
+    model.compile('adam', 'categorical_crossentropy', metrics=['accuracy'])
+    model.build(input_shape=xtrain.shape)
+
+    # fit and get predict times
     t1 = timer.default_timer()
-    fit_data = model.fit(xtrain,ytrain,epochs=15,batch_size=512, verbose=0)
+    fit_data = model.fit(xtrain, ytrain, epochs=15, batch_size=512, verbose=0)
     time_fit = timer.default_timer() - t1
     t1 = timer.default_timer()
-    scores = model.evaluate(xtest,ytest,verbose=0)
+    scores = model.evaluate(xtest, ytest, verbose=0)
     time_predict = timer.default_timer() - t1
 
-
-    #get f1 score
+    # get f1 score
     predict = model.predict(xtest)
-    #return results in dict
+    # return results in dict
     results = {
         'Model': "CNN",
         "Accuracy":  scores[1],
-        'F1-Score': f1_score(tf.argmax(ytest,axis=1).numpy(),tf.argmax(input=predict, axis=1).numpy()), 
-        "Fit-Time":time_fit, 
-        "Predict-Time":time_predict
+        'F1-Score': f1_score(tf.argmax(ytest, axis=1).numpy(), tf.argmax(input=predict, axis=1).numpy()),
+        "Fit-Time": time_fit,
+        "Predict-Time": time_predict
     }
     return results
-    
 
 
 def lr(xtrain, ytrain, xtest, ytest):
-    
-    #scaling ideas adapted from: https://towardsdatascience.com/building-a-logistic-regression-in-python-step-by-step-becd4d56c9c8
-    #standardize columns with gaussian distribution (age)
+
+    # scaling ideas adapted from: https://towardsdatascience.com/building-a-logistic-regression-in-python-step-by-step-becd4d56c9c8
+    # standardize columns with gaussian distribution (age)
     Standardize_Var = ['age']
     Standardize_transformer = Pipeline(steps=[('standard', StandardScaler())])
 
-    #min-max to normalize columns with non-gaussian, non-binary distribution ('education.num','capital.gain','capital.loss','hours.per.week')
-    Normalize_Var = ['education.num','capital.gain','capital.loss','hours.per.week']
+    # min-max to normalize columns with non-gaussian, non-binary distribution ('education.num','capital.gain','capital.loss','hours.per.week')
+    Normalize_Var = ['education.num', 'capital.gain',
+                     'capital.loss', 'hours.per.week']
     Normalize_transformer = Pipeline(steps=[('norm', MinMaxScaler())])
 
-    #transform according to columns
-    preprocessor = ColumnTransformer(transformers= 
-                                     [('standard', Standardize_transformer, Standardize_Var), 
-                                      ('norm', Normalize_transformer, Normalize_Var)])
+    # transform according to columns
+    preprocessor = ColumnTransformer(transformers=[('standard', Standardize_transformer, Standardize_Var),
+                                                   ('norm', Normalize_transformer, Normalize_Var)])
     preprocessor = preprocessor.fit(xtrain)
     xtrain_scaled = preprocessor.transform(xtrain)
     xtest_scaled = preprocessor.transform(xtest)
 
-    #add back the columns
-    xtrain[['age','education.num','capital.gain','capital.loss','hours.per.week']] = xtrain_scaled
-    xtest[['age','education.num','capital.gain','capital.loss','hours.per.week']] = xtest_scaled
-    
-    
-    #fit logistic regression
-    lr = LogisticRegression(max_iter=35) #best found iteration value
+    # add back the columns
+    xtrain[['age', 'education.num', 'capital.gain',
+            'capital.loss', 'hours.per.week']] = xtrain_scaled
+    xtest[['age', 'education.num', 'capital.gain',
+           'capital.loss', 'hours.per.week']] = xtest_scaled
+
+    # fit logistic regression
+    lr = LogisticRegression(max_iter=35)  # best found iteration value
     t1 = timer.default_timer()
     lr.fit(xtrain, ytrain)
     time_fit = timer.default_timer() - t1
-    
-    #make predictions on test set
+
+    # make predictions on test set
     t1 = timer.default_timer()
     predictions = lr.predict(xtest)
     time_predict = timer.default_timer() - t1
-    
 
-    #return results in dict
+    # return results in dict
     results = {
         'Model': "LR",
-        "Accuracy":  accuracy_score(ytest,predictions) ,
-        'F1-Score': f1_score(ytest,predictions), 
-        "Fit-Time":time_fit, 
-        "Predict-Time":time_predict
+        "Accuracy":  accuracy_score(ytest, predictions),
+        'F1-Score': f1_score(ytest, predictions),
+        "Fit-Time": time_fit,
+        "Predict-Time": time_predict
     }
     return results
 
