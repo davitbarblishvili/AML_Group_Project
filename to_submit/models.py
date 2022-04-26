@@ -275,7 +275,7 @@ def lr(xtrain, ytrain, xtest, ytest):
            'capital.loss', 'hours.per.week']] = xtest_scaled
 
     # fit logistic regression
-    lr = LogisticRegression(max_iter=35)  # best found iteration value
+    lr = LogisticRegression(penalty='elasticnet',max_iter=30, solver='saga',l1_ratio=0.5)  # best found iteration value
     t1 = timer.default_timer()
     lr.fit(xtrain, ytrain)
     time_fit = timer.default_timer() - t1
