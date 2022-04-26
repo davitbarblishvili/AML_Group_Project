@@ -79,7 +79,7 @@ def run_random_forest_smote(X_dev, y_dev, X_test, y_test):
         "Fit-Time": t_end - t_start,
         "Predict-Time": p_end - p_start
     }
-    return results
+    return results, Y_pred_rf_best
 
 
 def run_knn(neighbors, distance, X_dev, y_dev, X_test, y_test):
@@ -114,7 +114,7 @@ def run_knn(neighbors, distance, X_dev, y_dev, X_test, y_test):
         "Fit-Time": t_end - t_start,
         "Predict-Time": p_end - p_start
     }
-    return results
+    return results, pred_KNN
 
 
 def run_GNB(X_dev, y_dev, X_test, y_test):
@@ -146,7 +146,7 @@ def run_GNB(X_dev, y_dev, X_test, y_test):
         "Fit-Time": t_end - t_start,
         "Predict-Time": p_end - p_start
     }
-    return results
+    return results, ypred_gnb
 
 
 def run_SVM(X_dev_, y_dev, X_test_, y_test):
@@ -177,7 +177,7 @@ def run_SVM(X_dev_, y_dev, X_test_, y_test):
         "Fit-Time": t_end_poly - t_start_poly,
         "Predict-Time": p_end_poly - p_start_poly
     }
-    return results
+    return results, pred_test4
 
 
 def cnn(xtrain, ytrain, xtest,  ytest):
@@ -246,7 +246,7 @@ def cnn(xtrain, ytrain, xtest,  ytest):
         "Fit-Time": time_fit,
         "Predict-Time": time_predict
     }
-    return results
+    return results, tf.argmax(input=predict, axis=1).numpy()
 
 
 def lr(xtrain, ytrain, xtest, ytest):
@@ -293,7 +293,7 @@ def lr(xtrain, ytrain, xtest, ytest):
         "Fit-Time": time_fit,
         "Predict-Time": time_predict
     }
-    return results
+    return results, predictions
 
 
 #import data1
@@ -328,29 +328,29 @@ results = pd.DataFrame(columns = ['Model', 'Accuracy', 'F1-Score', 'Fit-Time', '
 
 #RUN ALL MODELS ON ALL DATA
 #Naive Bayes
-results = results.append( run_GNB(train_x1,train_y1,test_x1,test_y1) , ignore_index = True)
-results = results.append( run_GNB(train_x2,train_y2,test_x2,test_y2) , ignore_index = True)
-results = results.append( run_GNB(train_x3,train_y3,test_x3,test_y3) , ignore_index = True)
+results = results.append( run_GNB(train_x1,train_y1,test_x1,test_y1)[0] , ignore_index = True)
+results = results.append( run_GNB(train_x2,train_y2,test_x2,test_y2)[0] , ignore_index = True)
+results = results.append( run_GNB(train_x3,train_y3,test_x3,test_y3)[0] , ignore_index = True)
 #Logistic Regression
-results = results.append( lr(train_x1,train_y1,test_x1,test_y1) , ignore_index = True)
-results = results.append( lr(train_x2,train_y2,test_x2,test_y2) , ignore_index = True)
-results = results.append( lr(train_x3,train_y3,test_x3,test_y3) , ignore_index = True)
+results = results.append( lr(train_x1,train_y1,test_x1,test_y1)[0] , ignore_index = True)
+results = results.append( lr(train_x2,train_y2,test_x2,test_y2)[0] , ignore_index = True)
+results = results.append( lr(train_x3,train_y3,test_x3,test_y3)[0] , ignore_index = True)
 #SVM
-results = results.append( run_SVM(train_x1,train_y1,test_x1,test_y1) , ignore_index = True)
-results = results.append( run_SVM(train_x2,train_y2,test_x2,test_y2) , ignore_index = True)
-results = results.append( run_SVM(train_x3,train_y3,test_x3,test_y3) , ignore_index = True)
+results = results.append( run_SVM(train_x1,train_y1,test_x1,test_y1)[0] , ignore_index = True)
+results = results.append( run_SVM(train_x2,train_y2,test_x2,test_y2)[0] , ignore_index = True)
+results = results.append( run_SVM(train_x3,train_y3,test_x3,test_y3)[0] , ignore_index = True)
 #KNN (with best parameters)
-results = results.append( run_knn(20,2, train_x1,train_y1,test_x1,test_y1) , ignore_index = True)
-results = results.append( run_knn(20,2, train_x2,train_y2,test_x2,test_y2) , ignore_index = True)
-results = results.append( run_knn(20,2, train_x3,train_y3,test_x3,test_y3) , ignore_index = True)
+results = results.append( run_knn(20,2, train_x1,train_y1,test_x1,test_y1)[0] , ignore_index = True)
+results = results.append( run_knn(20,2, train_x2,train_y2,test_x2,test_y2)[0] , ignore_index = True)
+results = results.append( run_knn(20,2, train_x3,train_y3,test_x3,test_y3)[0] , ignore_index = True)
 #Random Forest (with best resampling)
-results = results.append( run_random_forest_smote(train_x1,train_y1,test_x1,test_y1) , ignore_index = True)
-results = results.append( run_random_forest_smote(train_x2,train_y2,test_x2,test_y2) , ignore_index = True)
-results = results.append( run_random_forest_smote(train_x3,train_y3,test_x3,test_y3) , ignore_index = True)
+results = results.append( run_random_forest_smote(train_x1,train_y1,test_x1,test_y1)[0] , ignore_index = True)
+results = results.append( run_random_forest_smote(train_x2,train_y2,test_x2,test_y2)[0] , ignore_index = True)
+results = results.append( run_random_forest_smote(train_x3,train_y3,test_x3,test_y3)[0] , ignore_index = True)
 #CNN
-results = results.append(cnn(train_x1,train_y1,test_x1,test_y1) , ignore_index = True)
-results = results.append(cnn(train_x2,train_y2,test_x2,test_y2) , ignore_index = True)
-results = results.append(cnn(train_x3,train_y3,test_x3,test_y3) , ignore_index = True)
+results = results.append(cnn(train_x1,train_y1,test_x1,test_y1)[0] , ignore_index = True)
+results = results.append(cnn(train_x2,train_y2,test_x2,test_y2)[0] , ignore_index = True)
+results = results.append(cnn(train_x3,train_y3,test_x3,test_y3)[0] , ignore_index = True)
 
 
 
