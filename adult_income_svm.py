@@ -8,25 +8,26 @@ from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, classifi
 from sklearn.svm import LinearSVC, SVC
 import timeit as timer
 
-train = pd.read_csv("train.csv")
-test = pd.read_csv("test.csv")
+train = pd.read_csv("train1.csv")
+test = pd.read_csv("test1.csv")
 
-X_dev = train.drop('income', axis=1)
+X_dev_g = train.drop('income', axis=1)
 y_dev = train['income']
-X_test = test.drop('income', axis=1)
+X_test_g = test.drop('income', axis=1)
 y_test = test['income']
 
 def min_max_scale(X_dev, X_test):
     scaler = MinMaxScaler()
-    X_dev = scaler.fit_transform(X_dev)
-    X_test = scaler.transform(X_test)
+    X_dev_s = scaler.fit_transform(X_dev)
+    X_test_s = scaler.transform(X_test)
+    return X_dev_s, X_test_s
 
 def run_SVM():
     print("====================================")
     print("SVM with Polynomial kernel")
     print("---------")
 
-    min_max_scale(X_dev, X_test)
+    X_dev, X_test = min_max_scale(X_dev_g, X_test_g)
     
     
     svm_poly = SVC(kernel="poly")
